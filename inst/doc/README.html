@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>SIHR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">SIHR</h1>
+
+
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<div id="sihr" class="section level1">
+<h1>SIHR</h1>
+<!-- badges: start -->
+<!-- badges: end -->
+<p>The goal of SIHR is to provide inference procedures in the high-dimensional setting for (1)linear functionals (LF) and quadratic functionals (QF) in linear regression, (2)linear functional in logistic regression, (3) individual treatment effects (ITE) in linear and logistic regression.</p>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>These are basic examples which show how to solve the common high-dimensional inference problems:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(SIHR)</span></code></pre></div>
+<p>Inference for linear functional in high-dimensional linear regression model</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a>n =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a>A1gen &lt;-<span class="st"> </span><span class="cf">function</span>(rho,p){</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a>  A1=<span class="kw">matrix</span>(<span class="dv">0</span>,p,p)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>      A1[i,j]&lt;-rho<span class="op">^</span>(<span class="kw">abs</span>(i<span class="op">-</span>j))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a>    } </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true"></a>  }</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true"></a>  A1</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true"></a>}</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true"></a>mu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true"></a>mu[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)<span class="op">/</span><span class="dv">5</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true"></a>rho =<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true"></a>Cov &lt;-<span class="st"> </span>(<span class="kw">A1gen</span>(rho,p))<span class="op">/</span><span class="dv">2</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true"></a>beta &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true"></a>beta[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)<span class="op">/</span><span class="dv">5</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true"></a>X &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n,mu,Cov)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true"></a>y =<span class="st"> </span>X<span class="op">%*%</span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true"></a>loading &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,p),Cov)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true"></a>Est =<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">LF</span>(<span class="dt">X =</span> X, <span class="dt">y =</span> y, <span class="dt">loading =</span> loading, <span class="dt">intercept =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true"></a><span class="co">#&gt;           [,1]</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true"></a><span class="co">#&gt; [1,] -1.767103</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true"></a><span class="co">#&gt; [1] 2.421901</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true"></a></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true"></a><span class="co">#&gt; [1] -6.513941  2.979735</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true"></a><span class="co">### test whether the linear functional is below zero or not (1 indicates that it is above zero)</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>Individualised Treatment Effect in high-dimensional logistic regression model</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>n1 =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>n2 =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>A1gen &lt;-<span class="st"> </span><span class="cf">function</span>(rho,p){</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>A1=<span class="kw">matrix</span>(<span class="dv">0</span>,p,p)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  A1[i,j]&lt;-rho<span class="op">^</span>(<span class="kw">abs</span>(i<span class="op">-</span>j))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>}</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>}</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>A1</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>}</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>mu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a>rho =<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a>Cov &lt;-<span class="st"> </span>(<span class="kw">A1gen</span>(rho,p))<span class="op">/</span><span class="dv">2</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>beta1 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a>beta1[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)<span class="op">/</span><span class="dv">5</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>beta2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a>beta2[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)<span class="op">/</span><span class="dv">10</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a>X1 &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n1,mu,Cov)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a>X2 &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n2,mu,Cov)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a>y1 =<span class="st"> </span>X1<span class="op">%*%</span>beta1 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n1)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>y2 =<span class="st"> </span>X2<span class="op">%*%</span>beta2 <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(n2)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a>loading &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,p),Cov)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>Est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">ITE</span>(<span class="dt">X1 =</span> X1, <span class="dt">y1 =</span> y1, <span class="dt">X2 =</span> X2, <span class="dt">y2 =</span> y2,<span class="dt">loading =</span> loading, <span class="dt">intercept =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a><span class="co">#&gt; [1,] 5.481873</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true"></a><span class="co">#&gt; [1] 2.519672</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true"></a><span class="co">#&gt; [1]  0.5434056 10.4203400</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true"></a><span class="co">### test whether the linear ITE is below zero or not (1 indicates that it is above zero)</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<p>Inference for linear functional in high-dimensional logistic regression model</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>A1gen &lt;-<span class="st"> </span><span class="cf">function</span>(rho,p){</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>  A1=<span class="kw">matrix</span>(<span class="dv">0</span>,p,p)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>      A1[i,j]&lt;-rho<span class="op">^</span>(<span class="kw">abs</span>(i<span class="op">-</span>j))</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    } </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>  }</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>  A1</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>}</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>n =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>mu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>rho =<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>Cov &lt;-<span class="st"> </span>(<span class="kw">A1gen</span>(rho,p))<span class="op">/</span><span class="dv">2</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>beta &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>beta[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>] &lt;-<span class="fl">0.5</span><span class="op">*</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)<span class="op">/</span><span class="dv">10</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>X &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n,mu,Cov)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>exp_val &lt;-<span class="st"> </span>X<span class="op">%*%</span>beta</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>prob &lt;-<span class="st"> </span><span class="kw">exp</span>(exp_val)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw">exp</span>(exp_val))</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>y &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n,<span class="dv">1</span>,prob)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a>loading &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dv">1</span>,mu,Cov)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>Est =<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">LF_logistic</span>(<span class="dt">X =</span> X, <span class="dt">y =</span> y, <span class="dt">loading =</span> loading, <span class="dt">weight =</span> <span class="kw">rep</span>(<span class="dv">1</span>,n), <span class="dt">trans =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a><span class="co">### trans = TRUE implies target quantity is the case probability</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a><span class="co">#&gt; [1] 0.7980198</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a><span class="co">#&gt; [1] 0.4963564</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true"></a><span class="co">#&gt; [1] 0.009362659 0.999394921</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true"></a><span class="co">### test whether the case probability is below 0.5 or not (1 indicates that it is above 0.5)</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>Individualised Treatment Effect in high-dimensional logistic model</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>A1gen &lt;-<span class="st"> </span><span class="cf">function</span>(rho,p){</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>A1=<span class="kw">matrix</span>(<span class="dv">0</span>,p,p)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a> <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>   A1[i,j]&lt;-rho<span class="op">^</span>(<span class="kw">abs</span>(i<span class="op">-</span>j))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a> }</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>A1</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>}</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>n1 =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>n2 =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>mu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>rho =<span class="st"> </span><span class="fl">0.5</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>Cov &lt;-<span class="st"> </span>(<span class="kw">A1gen</span>(rho,p))<span class="op">/</span><span class="dv">2</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a>beta1 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>beta1[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)<span class="op">/</span><span class="dv">5</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>beta2 &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,p)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a>beta2[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)<span class="op">/</span><span class="dv">10</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a>X1 &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n1,mu,Cov)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>X2 &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(n2,mu,Cov)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a>exp_val1 &lt;-<span class="st"> </span>X1<span class="op">%*%</span>beta1</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a>exp_val2 &lt;-<span class="st"> </span>X2<span class="op">%*%</span>beta2</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true"></a>prob1 &lt;-<span class="st"> </span><span class="kw">exp</span>(exp_val1)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw">exp</span>(exp_val1))</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true"></a>prob2 &lt;-<span class="st"> </span><span class="kw">exp</span>(exp_val2)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw">exp</span>(exp_val2))</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true"></a>y1 &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n1,<span class="dv">1</span>,prob1)</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true"></a>y2 &lt;-<span class="st"> </span><span class="kw">rbinom</span>(n2,<span class="dv">1</span>,prob2)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true"></a>loading &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dv">1</span>,mu,Cov)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true"></a>Est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">ITE_Logistic</span>(<span class="dt">X1 =</span> X1, <span class="dt">y1 =</span> y1, <span class="dt">X2 =</span> X2, <span class="dt">y2 =</span> y2,<span class="dt">loading =</span> loading, <span class="dt">weight =</span> <span class="ot">NULL</span>, <span class="dt">trans =</span> <span class="ot">FALSE</span>)</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true"></a><span class="co">### trans = FALSE implies target quantity is the difference between two linear combinations of the regression coefficients</span></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true"></a></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true"></a><span class="co">#&gt; [1] -1.936224</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true"></a><span class="co">#&gt; [1] 7.925353</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true"></a></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true"></a><span class="co">#&gt; [1] -17.46963  13.59718</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true"></a><span class="co">### test whether the first case probability is smaller than the second case probability or not (1 indicates that the first case probability is larger than the second case probability)</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true"></a></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>Inference for quadratic functional in high-dimensional linear model</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">library</span>(MASS)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a>A1gen &lt;-<span class="st"> </span><span class="cf">function</span>(rho,p){</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a>  A1=<span class="kw">matrix</span>(<span class="dv">0</span>,p,p)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>p){</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>      A1[i,j]&lt;-rho<span class="op">^</span>(<span class="kw">abs</span>(i<span class="op">-</span>j))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>    } </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>  }</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>  A1</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>}</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a>rho =<span class="st"> </span><span class="fl">0.6</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a>Cov &lt;-<span class="st"> </span>(<span class="kw">A1gen</span>(rho,<span class="dv">400</span>))</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>mu &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">400</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a>mu[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>] &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)<span class="op">/</span><span class="dv">5</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>beta &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="dv">0</span>,<span class="dv">400</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a>beta[<span class="dv">25</span><span class="op">:</span><span class="dv">50</span>] &lt;-<span class="st"> </span><span class="fl">0.08</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>X &lt;-<span class="st"> </span>MASS<span class="op">::</span><span class="kw">mvrnorm</span>(<span class="dv">100</span>,mu,Cov)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a>y &lt;-<span class="st"> </span>X<span class="op">%*%</span>beta <span class="op">+</span><span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a>test.set &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">30</span><span class="op">:</span><span class="dv">100</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a><span class="co">## Inference for Quadratic Functional with Population Covariance Matrix in middle</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a>Est =<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">QF</span>(<span class="dt">X =</span> X, <span class="dt">y =</span> y, <span class="dt">G=</span>test.set)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 5&quot;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true"></a><span class="co">#&gt; [1,] 0.624398</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true"></a></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true"></a></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true"></a><span class="co">#&gt; [1] 0.1384537</span></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true"></a><span class="co">#&gt;           [,1]      [,2]</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true"></a><span class="co">#&gt; [1,] 0.3530337 0.8957623</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true"></a></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true"></a><span class="co">### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true"></a></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true"></a></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true"></a><span class="co">## Inference for Quadratic Functional with known matrix A in middle</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true"></a></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true"></a>Est =<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">QF</span>(<span class="dt">X =</span> X, <span class="dt">y =</span> y, <span class="dt">G=</span>test.set, <span class="dt">Cov.weight =</span> <span class="ot">FALSE</span>, <span class="dt">A =</span> <span class="kw">diag</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">400</span>,<span class="dv">400</span>))</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true"></a></span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true"></a><span class="co">#&gt; [1,] 19.75794</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true"></a></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true"></a></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true"></a><span class="co">#&gt; [1] 2.622109</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true"></a></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true"></a><span class="co">#&gt;         [,1]     [,2]</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true"></a><span class="co">#&gt; [1,] 14.6187 24.89717</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true"></a></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true"></a><span class="co">### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true"></a></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true"></a></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true"></a><span class="co">## Inference for square norm of regression vector</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true"></a></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true"></a>Est =<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">QF</span>(<span class="dt">X =</span> X, <span class="dt">y =</span> y, <span class="dt">G=</span>test.set, <span class="dt">Cov.weight =</span> <span class="ot">FALSE</span>, <span class="dt">A =</span> <span class="kw">diag</span>(<span class="kw">ncol</span>(X)))</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true"></a><span class="co">#&gt; [1] &quot;step is 3&quot;</span></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true"></a><span class="co">### Point esitmator</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true"></a></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true"></a>Est<span class="op">$</span>prop.est</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true"></a><span class="co">#&gt;          [,1]</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true"></a><span class="co">#&gt; [1,] 0.360126</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true"></a></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true"></a><span class="co">### Standard error </span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true"></a></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true"></a>Est<span class="op">$</span>se</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true"></a><span class="co">#&gt; [1] 0.112145</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true"></a></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true"></a><span class="co">### Confidence interval</span></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true"></a>Est<span class="op">$</span>CI</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true"></a><span class="co">#&gt;           [,1]      [,2]</span></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true"></a><span class="co">#&gt; [1,] 0.1403258 0.5799262</span></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true"></a></span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true"></a><span class="co">### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)</span></span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true"></a></span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true"></a>Est<span class="op">$</span>decision</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true"></a><span class="co">#&gt; [1] 1</span></span></code></pre></div>
+<p>Finding projection direction in high dimensional linear regression</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>n =<span class="st"> </span><span class="dv">100</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>X =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">sample</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>,n<span class="op">*</span>p,<span class="dt">replace =</span> <span class="ot">TRUE</span>),<span class="dt">nrow =</span> n,<span class="dt">ncol =</span> p)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>resol =<span class="st"> </span><span class="fl">1.5</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>step =<span class="st"> </span><span class="dv">3</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="co">## Finding Projection Direction using fixed tuning parameter</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>Direction.est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">Direction_fixedtuning</span>(X,<span class="dt">loading=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,(p<span class="dv">-1</span>))),<span class="dt">mu=</span><span class="kw">sqrt</span>(<span class="fl">2.01</span><span class="op">*</span><span class="kw">log</span>(p)<span class="op">/</span>n)<span class="op">*</span>resol<span class="op">^</span>{<span class="op">-</span>(step<span class="dv">-1</span>)})</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a><span class="co">### First 20 entries of the projection vector</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>Direction.est<span class="op">$</span>proj[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>]</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a><span class="co">#&gt;  [1]  7.493488e-01  2.758068e-21 -2.398941e-21  1.027806e-21  4.330324e-21</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a><span class="co">#&gt;  [6]  3.035517e-21 -1.590560e-21  2.899092e-21 -6.195319e-23 -1.803635e-22</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true"></a><span class="co">#&gt; [11]  1.748848e-21  2.673834e-21  2.035823e-21 -4.738669e-03  3.414678e-21</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true"></a><span class="co">#&gt; [16]  1.103289e-01  1.375374e-21  6.532494e-21 -1.950295e-23 -5.915719e-22</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true"></a><span class="co">## Finding Projection Direction using best step size</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true"></a>Direction.est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">Direction_searchtuning</span>(X,<span class="dt">loading=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,(p<span class="dv">-1</span>))))</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true"></a><span class="co">### First 20 entries of the projection vector</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true"></a>Direction.est<span class="op">$</span>proj[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>]</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true"></a><span class="co">#&gt;  [1]  7.493488e-01  2.738066e-21 -2.402517e-21  1.026739e-21  4.308531e-21</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true"></a><span class="co">#&gt;  [6]  2.972226e-21 -1.576492e-21  2.851612e-21 -9.986260e-23 -2.031438e-22</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true"></a><span class="co">#&gt; [11]  1.708582e-21  2.653890e-21  2.007360e-21 -4.738669e-03  3.339736e-21</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true"></a><span class="co">#&gt; [16]  1.103289e-01  1.349339e-21  6.434696e-21 -5.231257e-23 -5.845769e-22</span></span></code></pre></div>
+<p>Finding projection direction in high dimensional logistic regression</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>n =<span class="st"> </span><span class="dv">50</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>p =<span class="st"> </span><span class="dv">400</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a>X =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">sample</span>(<span class="op">-</span><span class="dv">2</span><span class="op">:</span><span class="dv">2</span>,n<span class="op">*</span>p,<span class="dt">replace =</span> <span class="ot">TRUE</span>),<span class="dt">nrow=</span>n,<span class="dt">ncol=</span>p)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a>y =<span class="st"> </span><span class="kw">rbinom</span>(n,<span class="dv">1</span>,<span class="fl">0.5</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>col.norm &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span><span class="kw">sqrt</span>((<span class="dv">1</span><span class="op">/</span>n)<span class="op">*</span><span class="kw">diag</span>(<span class="kw">t</span>(X)<span class="op">%*%</span>X)<span class="op">+</span><span class="fl">0.0001</span>);</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a>Xnor &lt;-<span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span><span class="kw">diag</span>(col.norm);</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a>fit =<span class="st"> </span>glmnet<span class="op">::</span><span class="kw">cv.glmnet</span>(Xnor, y, <span class="dt">alpha=</span><span class="dv">1</span>,<span class="dt">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a>htheta &lt;-<span class="st"> </span><span class="kw">as.vector</span>(<span class="kw">coef</span>(fit, <span class="dt">s =</span> <span class="st">&quot;lambda.min&quot;</span>))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a>support&lt;-(<span class="kw">abs</span>(htheta)<span class="op">&gt;</span><span class="fl">0.001</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a>Xb &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">rep</span>(<span class="dv">1</span>,n),Xnor);</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a>Xc &lt;-<span class="st"> </span><span class="kw">cbind</span>(<span class="kw">rep</span>(<span class="dv">1</span>,n),X);</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a>col.norm &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>,col.norm);</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a>pp &lt;-<span class="st"> </span>(p<span class="op">+</span><span class="dv">1</span>);</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a>xnew =<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,(p<span class="dv">-1</span>)))</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a>loading=<span class="kw">rep</span>(<span class="dv">0</span>,pp)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true"></a>loading[<span class="dv">1</span>]=<span class="dv">1</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true"></a>loading[<span class="op">-</span><span class="dv">1</span>]=xnew</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true"></a>htheta &lt;-<span class="st"> </span>htheta<span class="op">*</span>col.norm;</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true"></a>htheta &lt;-<span class="st"> </span><span class="kw">as.vector</span>(htheta)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true"></a>f_prime &lt;-<span class="st"> </span><span class="kw">exp</span>(Xc<span class="op">%*%</span>htheta)<span class="op">/</span>(<span class="dv">1</span><span class="op">+</span><span class="kw">exp</span>(Xc<span class="op">%*%</span>htheta))<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true"></a></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true"></a><span class="co">## Finding Projection Direction using fixed tuning parameter</span></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true"></a></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true"></a>Direction.est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">Direction_fixedtuning</span>(X,<span class="dt">loading=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="kw">rep</span>(<span class="dv">0</span>,(p<span class="dv">-1</span>))),<span class="dt">mu=</span><span class="kw">sqrt</span>(<span class="fl">2.01</span><span class="op">*</span><span class="kw">log</span>(p)<span class="op">/</span>n)<span class="op">*</span>resol<span class="op">^</span>{<span class="op">-</span>(step<span class="dv">-1</span>)},<span class="dt">model =</span> <span class="st">&quot;logistic&quot;</span>,<span class="dt">weight =</span> <span class="dv">1</span><span class="op">/</span>f_prime, <span class="dt">deriv.vec =</span> f_prime)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true"></a><span class="co">### First 20 entries of the projection vector</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true"></a>Direction.est<span class="op">$</span>proj[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>]</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true"></a><span class="co">#&gt;  [1]  6.743570e-01 -4.409032e-22 -4.296854e-22 -2.577536e-02  4.578960e-23</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true"></a><span class="co">#&gt;  [6]  4.170592e-03  1.148916e-21  1.592058e-23  1.002686e-22 -9.457976e-22</span></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true"></a><span class="co">#&gt; [11]  2.069458e-22 -2.019592e-22 -5.011356e-23  3.910995e-22  7.806522e-23</span></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true"></a><span class="co">#&gt; [16] -2.753958e-22 -5.655215e-22 -1.000020e-21  3.232662e-22 -6.223914e-22</span></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true"></a><span class="co">## Finding Projection Direction using best step size</span></span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true"></a>Direction.est &lt;-<span class="st"> </span>SIHR<span class="op">::</span><span class="kw">Direction_searchtuning</span>(Xc,loading,<span class="dt">model =</span> <span class="st">&quot;logistic&quot;</span>,<span class="dt">weight =</span> <span class="dv">1</span><span class="op">/</span>f_prime, <span class="dt">deriv.vec =</span> f_prime)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true"></a><span class="co">### First 20 entries of the projection vector</span></span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true"></a></span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true"></a>Direction.est<span class="op">$</span>proj[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>]</span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true"></a><span class="co">#&gt;  [1]  9.090972e-01  6.073521e-01 -1.350587e-20 -6.486011e-21 -8.931221e-21</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true"></a><span class="co">#&gt;  [6] -4.727004e-21  4.972967e-02 -2.836570e-20 -2.354470e-21 -2.761754e-21</span></span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true"></a><span class="co">#&gt; [11] -7.338999e-21  3.331681e-21  5.396664e-21 -1.549780e-20  5.381605e-21</span></span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true"></a><span class="co">#&gt; [16]  9.408748e-21  1.730183e-01  1.052713e-20  9.447765e-21 -5.530575e-02</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
