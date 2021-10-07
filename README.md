@@ -10,7 +10,8 @@ The goal of SIHR is to provide inference procedures in the
 high-dimensional setting for (1)linear functionals (LF) and quadratic
 functionals (QF) in linear regression, (2)linear functional in logistic
 regression, (3) individual treatment effects (ITE) in linear and
-logistic regression.
+logistic regression and (4) single regression coefficient in binary
+outcome regression.
 
 ## Installation
 
@@ -51,23 +52,23 @@ model
     X <- MASS::mvrnorm(n,mu,Cov)
     y = X%*%beta + rnorm(n)
     loading <- MASS::mvrnorm(1,rep(0,p),Cov)
-    Est = SIHR::LF(X = X, y = y, loading = loading, intercept = TRUE)
+    Est = SIHR::LF(X = X, y = y, loading = loading)
     #> [1] "step is 3"
 
     ### Point esitmator
 
     Est$prop.est
     #>           [,1]
-    #> [1,] -1.472131
+    #> [1,] -7.750703
 
     ### Standard error 
 
     Est$se
-    #> [1] 2.453395
+    #> [1] 2.169246
 
     ### Confidence interval
     Est$CI
-    #> [1] -6.280697  3.336434
+    #> [1] -12.002347  -3.499059
 
     ### test whether the linear functional is below zero or not (1 indicates that it is above zero)
 
@@ -102,23 +103,23 @@ model
     y1 = X1%*%beta1 + rnorm(n1)
     y2 = X2%*%beta2 + rnorm(n2)
     loading <- MASS::mvrnorm(1,rep(0,p),Cov)
-    Est <- SIHR::ITE(X1 = X1, y1 = y1, X2 = X2, y2 = y2,loading = loading, intercept = TRUE)
+    Est <- SIHR::ITE(X1 = X1, y1 = y1, X2 = X2, y2 = y2,loading = loading)
     #> [1] "step is 3"
     #> [1] "step is 3"
     ### Point esitmator
 
     Est$prop.est
-    #>          [,1]
-    #> [1,] -1.80703
+    #>           [,1]
+    #> [1,] -5.581559
 
     ### Standard error 
 
     Est$se
-    #> [1] 2.651258
+    #> [1] 2.499677
 
     ### Confidence interval
     Est$CI
-    #> [1] -7.003400  3.389339
+    #> [1] -10.4808351  -0.6822831
 
     ### test whether the linear ITE is below zero or not (1 indicates that it is above zero)
 
@@ -158,16 +159,16 @@ model
     ### Point esitmator
 
     Est$prop.est
-    #> [1] 0.9323544
+    #> [1] 0.3264385
 
     ### Standard error 
 
     Est$se
-    #> [1] 0.1662482
+    #> [1] 0.7664956
 
     ### Confidence interval
     Est$CI
-    #> [1] 0.07290314 0.99958623
+    #> [1] 0.000522256 0.997780286
 
     ### test whether the case probability is below 0.5 or not (1 indicates that it is above 0.5)
 
@@ -213,18 +214,107 @@ Individualised Treatment Effect in high-dimensional logistic model
     ### Point esitmator
 
     Est$prop.est
-    #> [1] 3.916573
+    #> [1] -1.409946
 
     ### Standard error 
 
     Est$se
-    #> [1] 4.992152
+    #> [1] 4.766363
 
     ### Confidence interval
     Est$CI
-    #> [1] -5.867865 13.701010
+    #> [1] -10.751845   7.931954
 
     ### test whether the first case probability is smaller than the second case probability or not (1 indicates that the first case probability is larger than the second case probability)
+
+    Est$decision
+    #> [1] 0
+
+Inference for single regression coefficient in high-dimensional binary
+GLM (probit model)
+
+
+    sp = 20
+    n = 500
+    p = 800
+
+    sig1 = toeplitz(seq(0.6, 0,length.out = p/10))
+    Sig = Matrix::bdiag(rep(list(sig1),10))+diag(rep(0.4,p))
+    X = MASS::mvrnorm(n, mu=rep(0,p), Sigma=Sig)
+    b = rep(0,p)
+    b[1:sp] = rep(c(0.4,-0.4), sp/2)
+
+    ## Inference for single regression coefficient in high-dimensional binary probit model
+    f = function(x){
+      pnorm(x)
+    }
+    prob = f(X %*% b)
+    y = array(dim = 1)
+    for(i in 1:n){
+    y[i] = rbinom(1,1,prob[i])
+    }
+    Est = SIHR::GLM_binary(X = X, y = y,index = 1, model = "probit", intercept = FALSE)
+    #> [1] "step is 3"
+
+    ### Point esitmator
+
+    Est$prop.est
+    #> [1] 0.2076012
+
+    ### Standard error 
+
+    Est$se
+    #> [1] 0.1054046
+
+    ### Confidence interval
+    Est$CI
+    #> [1] 0.001011965 0.414190351
+
+    ### test whether the first regression coefficient is equal to zero or not (1 indicates that it is significantly different from zero)
+
+    Est$decision
+    #> [1] 1
+
+Inference for single regression coefficient in high-dimensional binary
+GLM (inverse t1 model)
+
+
+    sp = 10
+    n = 800
+    p = 400
+
+    sig1 = toeplitz(seq(0.6, 0,length.out = p/10))
+    Sig = Matrix::bdiag(rep(list(sig1),10))+diag(rep(0.4,p))
+    X = MASS::mvrnorm(n, mu=rep(0,p), Sigma=Sig)
+    b = rep(0,p)
+    b[1:sp] = rep(c(0.4,-0.4), sp/2)
+    f = function(x){
+      pt(x,1)
+    }
+    prob = f(X %*% b)
+    y = array(dim = 1)
+    for(i in 1:n){
+    y[i] = rbinom(1,1,prob[i])
+    }
+    Est = SIHR::GLM_binary(X = X, y = y, index = 2, model = "inverse t1", lambda=0.1*sqrt(log(p)/n))
+    #> [1] "step is 4"
+
+    ### Point esitmator
+
+    Est$prop.est
+    #> [1] -0.5499067
+
+    ### Standard error 
+
+    Est$se
+    #> [1] 0.1211397
+
+    ### Confidence interval
+
+    Est$CI
+    #> [1] -0.7873360 -0.3124773
+
+    ### test whether the second regression coefficient is equal to zero or not (1 indicates that it is significantly different from zero)
 
     Est$decision
     #> [1] 0
@@ -260,17 +350,17 @@ Inference for quadratic functional in high-dimensional linear model
 
     Est$prop.est
     #>           [,1]
-    #> [1,] 0.6190974
+    #> [1,] 0.3579101
 
     ### Standard error 
 
     Est$se
-    #> [1] 0.1408278
+    #> [1] 0.1187189
 
     ### Confidence interval
     Est$CI
-    #>         [,1]      [,2]
-    #> [1,] 0.34308 0.8951149
+    #>           [,1]      [,2]
+    #> [1,] 0.1252253 0.5905949
 
     ### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)
 
@@ -279,23 +369,23 @@ Inference for quadratic functional in high-dimensional linear model
 
     ## Inference for Quadratic Functional with known matrix A in middle
 
-    Est = SIHR::QF(X = X, y = y, G=test.set, Cov.weight = FALSE,A = diag(1:400,400))
+    Est = SIHR::QF(X = X, y = y, G=test.set, Cov.weight = FALSE,A = diag(1:length(test.set),length(test.set)))
     #> [1] "step is 3"
     ### Point esitmator
 
     Est$prop.est
     #>          [,1]
-    #> [1,] 13.95282
+    #> [1,] 2.898267
 
     ### Standard error 
 
     Est$se
-    #> [1] 1.961894
+    #> [1] 0.8041309
 
     ### Confidence interval
     Est$CI
     #>          [,1]     [,2]
-    #> [1,] 10.10758 17.79807
+    #> [1,] 1.322199 4.474334
 
     ### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)
 
@@ -304,23 +394,23 @@ Inference for quadratic functional in high-dimensional linear model
 
     ## Inference for square norm of regression vector
 
-    Est = SIHR::QF(X = X, y = y, G=test.set, Cov.weight = FALSE, A = diag(ncol(X)))
+    Est = SIHR::QF(X = X, y = y, G=test.set, Cov.weight = FALSE, A = diag(length(test.set)))
     #> [1] "step is 3"
     ### Point esitmator
 
     Est$prop.est
     #>           [,1]
-    #> [1,] 0.3604669
+    #> [1,] 0.2738387
 
     ### Standard error 
 
     Est$se
-    #> [1] 0.1134924
+    #> [1] 0.1093765
 
     ### Confidence interval
     Est$CI
     #>           [,1]      [,2]
-    #> [1,] 0.1380258 0.5829079
+    #> [1,] 0.0594647 0.4882128
 
     ### test whether the quadratic form is equal to zero or not (1 indicates that it is above zero)
 
@@ -343,10 +433,10 @@ Finding projection direction in high dimensional linear regression
     ### First 20 entries of the projection vector
 
     Direction.est$proj[1:20]
-    #>  [1]  4.885238e-01 -1.307729e-22 -4.820590e-22 -4.730563e-22  4.099459e-22
-    #>  [6] -2.121057e-22  1.107240e-22  7.074245e-22 -3.298831e-22 -8.909411e-22
-    #> [11]  3.190602e-22 -5.479171e-22 -1.459483e-22  7.406262e-22  3.444757e-22
-    #> [16] -4.639920e-22  5.241628e-22  2.439795e-22 -6.310831e-23  3.374623e-22
+    #>  [1]  5.607283e-01 -5.595600e-22  1.235536e-21  2.449935e-22 -6.992049e-03
+    #>  [6] -4.504528e-23 -1.482542e-22 -1.521506e-22 -2.654100e-22 -1.996896e-22
+    #> [11]  4.154248e-22 -4.927661e-23 -8.973232e-24 -7.282273e-23  9.908534e-22
+    #> [16]  4.930162e-22  5.664041e-22 -8.152939e-22  1.409246e-22  6.194871e-22
 
     ## Finding Projection Direction using best step size
 
@@ -355,10 +445,10 @@ Finding projection direction in high dimensional linear regression
     ### First 20 entries of the projection vector
 
     Direction.est$proj[1:20]
-    #>  [1]  4.885238e-01 -1.091991e-22 -4.462848e-22 -4.090694e-22  3.788719e-22
-    #>  [6] -2.294092e-22  8.874104e-23  6.652129e-22 -2.989711e-22 -7.574834e-22
-    #> [11]  2.808130e-22 -4.763676e-22 -1.261935e-22  6.774587e-22  3.529624e-22
-    #> [16] -4.617330e-22  4.629765e-22  2.600671e-22 -5.794442e-23  3.159084e-22
+    #>  [1]  5.607283e-01 -5.778937e-22  1.312541e-21  2.545603e-22 -6.992049e-03
+    #>  [6] -2.854664e-23 -1.693089e-22 -1.653340e-22 -2.686916e-22 -1.826828e-22
+    #> [11]  4.938496e-22 -2.039571e-23  2.394669e-23 -7.415389e-23  1.051351e-21
+    #> [16]  4.818045e-22  5.965234e-22 -8.930813e-22  1.384202e-22  6.142351e-22
 
 Finding projection direction in high dimensional logistic regression
 
@@ -383,6 +473,7 @@ Finding projection direction in high dimensional logistic regression
     htheta <- htheta*col.norm;
     htheta <- as.vector(htheta)
     f_prime <- exp(Xc%*%htheta)/(1+exp(Xc%*%htheta))^2
+    step <- 2
 
     ## Finding Projection Direction using fixed tuning parameter
 
@@ -391,10 +482,10 @@ Finding projection direction in high dimensional logistic regression
     ### First 20 entries of the projection vector
 
     Direction.est$proj[1:20]
-    #>  [1]  6.511117e-01  4.123117e-22  7.241358e-22  7.602244e-22  2.299752e-23
-    #>  [6] -4.955183e-23 -8.210490e-22 -8.675124e-22 -5.280283e-22 -5.776955e-22
-    #> [11]  5.245559e-22  4.773688e-22 -6.437349e-22 -2.290232e-22 -3.748980e-22
-    #> [16]  8.661947e-23  1.961746e-22 -1.045093e-21 -4.234274e-23  9.773197e-23
+    #>  [1]  3.298132e-01 -6.354954e-23 -6.014956e-23  1.422227e-23 -3.172897e-23
+    #>  [6]  1.823724e-23  3.114810e-23  1.542873e-23 -6.710611e-23  3.725745e-23
+    #> [11] -5.090520e-23  7.257707e-23  1.053316e-23  4.912644e-23  1.228531e-23
+    #> [16]  1.182191e-23 -5.913138e-23 -1.722514e-23  3.438262e-23  5.472930e-24
 
     ## Finding Projection Direction using best step size
 
@@ -403,7 +494,7 @@ Finding projection direction in high dimensional logistic regression
     ### First 20 entries of the projection vector
 
     Direction.est$proj[1:20]
-    #>  [1]  3.115592e-01  2.276609e-01 -1.185920e-23  5.761868e-23 -1.308618e-22
-    #>  [6] -6.694081e-23 -1.811012e-22 -1.467710e-22 -3.668997e-22 -9.046264e-23
-    #> [11] -1.098490e-22  6.921171e-23  2.515489e-22 -1.454993e-22 -3.883868e-22
-    #> [16] -7.668592e-23  9.941822e-23  1.244238e-22  3.409436e-24  2.887665e-23
+    #>  [1]  3.486979e-01  2.596627e-01 -1.194396e-22 -2.271496e-22 -3.375731e-22
+    #>  [6] -9.876575e-23 -3.244736e-23  8.373347e-23 -1.083039e-22 -1.309022e-22
+    #> [11]  1.742417e-22  2.164754e-22  4.052596e-22 -4.009467e-23  1.013356e-22
+    #> [16] -1.488862e-23  1.134927e-22 -2.012654e-22  2.812060e-22  4.417586e-23
