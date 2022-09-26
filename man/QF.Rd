@@ -2,24 +2,25 @@
 % Please edit documentation in R/QF.R
 \name{QF}
 \alias{QF}
-\title{Inference for quadratic forms of the regression vector in high dimensional linear and logistic regressions}
+\title{Inference for quadratic forms of the regression vector in high dimensional
+generalized linear regressions}
 \usage{
 QF(
   X,
   y,
   G,
   A = NULL,
-  model = c("linear", "logistic", "logistic_alternative", "probit"),
+  model = c("linear", "logistic", "logistic_alter"),
   intercept = TRUE,
-  tau.vec = c(0, 0.5, 1),
   beta.init = NULL,
+  split = TRUE,
   lambda = NULL,
   mu = NULL,
-  init.step = NULL,
-  resol = 1.5,
-  maxiter = 6,
+  prob.filter = 0.05,
+  rescale = 1.1,
+  tau = c(0.25, 0.5),
   alpha = 0.05,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -29,65 +30,64 @@ QF(
 
 \item{G}{The set of indices, \code{G} in the quadratic form}
 
-\item{A}{The matrix A in the quadratic form, of dimension \eqn{|G|\times}\eqn{|G|}.
-If \code{NULL} A would be set as the \eqn{|G|\times}\eqn{|G|} submatrix of the population
-covariance matrix corresponding to the index set \code{G} (default =
-\code{NULL})}
+\item{A}{The matrix A in the quadratic form, of dimension
+\eqn{|G|\times}\eqn{|G|}. If \code{NULL} A would be set as the
+\eqn{|G|\times}\eqn{|G|} submatrix of the population covariance matrix
+corresponding to the index set \code{G} (default = \code{NULL})}
 
-\item{model}{The high dimensional regression model, either \code{linear} or
-\code{logistic} or \code{logistic_alternative} or \code{probit}}
+\item{model}{The high dimensional regression model, either \code{"linear"}
+or \code{"logistic"} or \code{"logistic_alter"}}
 
 \item{intercept}{Should intercept be fitted for the initial estimator
 (default = \code{TRUE})}
 
-\item{tau.vec}{The vector of enlargement factors for asymptotic variance of
-the bias-corrected estimator to handle super-efficiency (default =
-\eqn{c(0, 0.5, 1)})}
+\item{beta.init}{The initial estimator of the regression vector (default =
+\code{NULL})}
 
-\item{beta.init}{The initial estimator of the regression vector (default = \code{NULL})}
+\item{split}{Sampling splitting or not for computing the initial estimator.
+It take effects only when \code{beta.init =  NULL}. (default = \code{TRUE})}
 
-\item{lambda}{The tuning parameter in fitting model (default = \code{NULL})}
+\item{lambda}{The tuning parameter in fitting initial model. If \code{NULL},
+it will be picked by cross-validation. (default = \code{NULL})}
 
 \item{mu}{The dual tuning parameter used in the construction of the
-projection direction (default = \code{NULL})}
+projection direction. If \code{NULL} it will be searched automatically.
+(default = \code{NULL})}
 
-\item{init.step}{The initial step size used to compute \code{mu}; if set to
-\code{NULL} it is computed to be the number of steps (< \code{maxiter}) to
-obtain the smallest \code{mu} such that the dual optimization problem for
-constructing the projection direction converges (default = \code{NULL})}
+\item{prob.filter}{The threshold of estimated probabilities for filtering
+observations in logistic regression. (default = 0.05)}
 
-\item{resol}{Resolution or the factor by which \code{mu} is
-increased/decreased to obtain the smallest \code{mu} such that the dual
-optimization problem for constructing the projection direction converges
-(default = 1.5)}
+\item{rescale}{The factor to enlarge the standard error to account for the
+finite sample bias. (default = 1.1)}
 
-\item{maxiter}{aximum number of steps along which \code{mu} is
-increased/decreased to obtain the smallest \code{mu} such that the dual
-optimization problem for constructing the projection direction converges
-(default = 6)}
+\item{tau}{The enlargement factor for asymptotic variance of the
+bias-corrected estimator to handle super-efficiency. It allows for a scalar
+or vector. (default = \code{c(0.25,0.5)})}
 
-\item{alpha}{Level of significance to construct two-sided confidence interval (default = 0.05)}
+\item{alpha}{Level of significance to construct two-sided confidence interval
+(default = 0.05)}
 
-\item{verbose}{Should intermediate message(s) be printed (default =
-\code{TRUE})}
+\item{verbose}{Should intermediate message(s) be printed, the projection
+direction be returned. (default = \code{FALSE})}
 }
 \value{
-\item{est.plugin}{The plugin(biased) estimator for the quadratic form
-  of the regression vector restricted to \code{G}}
-\item{est.debias}{The
-  bias-corrected estimator of the quadratic form of the regression vector}
-\item{se.vec}{The vector of standard errors of the bias-corrected estimator,
-  length of \code{tau.vec}; corrsponding to different values of \code{tau.vec}}
+\item{est.plugin}{The plugin(biased) estimator for the quadratic form of the
+regression vector restricted to \code{G}}
+\item{est.debias}{The bias-corrected estimator of the quadratic form of the
+regression vector}
+\item{se}{Standard errors of the bias-corrected estimator,
+length of \code{tau}; corrsponding to different values of \code{tau}}
 \item{ci.mat}{The matrix of two.sided confidence interval for the quadratic
-  form of the regression vector; row corresponds to different values of
-  \code{tau.vec}}
-\item{proj}{The projection direction}
+form of the regression vector; row corresponds to different values of
+\code{tau}}
+\item{proj}{The projection direction. It will be returned only if \code{verbose} set as TRUE}
 }
 \description{
-Inference for quadratic forms of the regression vector in high dimensional linear and logistic regressions
+Inference for quadratic forms of the regression vector in high dimensional
+generalized linear regressions
 }
 \examples{
-X = matrix(rnorm(100*10), nrow=100, ncol=10)
+X = matrix(rnorm(100*5), nrow=100, ncol=5)
 y = X[,1] * 0.5 + X[,2] * 1 + rnorm(100)
 G = c(1,2)
 A = matrix(c(1.5, 0.8, 0.8, 1.5), nrow=2, ncol=2)

@@ -243,19 +243,20 @@ ci.QF <- function(object, probability=FALSE, alpha=0.05, alternative=c("two.side
     cat("QF only supports probability=FALSE \n")
     probability=FALSE
   }
+
   alternative = match.arg(alternative)
   est.debias = object$est.debias
-  se.vec     = object$se.vec
-  tau.vec    = object$tau.vec
-  n.tau = length(tau.vec)
+  se     = object$se
+  tau    = object$tau
+  n.tau = length(tau)
   if(alternative=="two.sided"){
-    output.ci = cbind(est.debias - qnorm(1-alpha/2)*se.vec, est.debias + qnorm(1-alpha/2)*se.vec)
+    output.ci = cbind(pmax(est.debias - qnorm(1-alpha/2)*se,0), pmax(est.debias + qnorm(1-alpha/2)*se,0))
   }else if(alternative=="less"){
-    output.ci = cbind(-Inf, est.debias + qnorm(1-alpha)*se.vec)
+    output.ci = cbind(0, pmax(est.debias + qnorm(1-alpha)*se,0))
   }else if(alternative=="greater"){
-    output.ci = cbind(est.debias - qnorm(1-alpha)*se.vec, Inf)
+    output.ci = cbind(pmax(est.debias - qnorm(1-alpha)*se,0), Inf)
   }
-  output.ci = data.frame(cbind(tau.vec, output.ci))
+  output.ci = data.frame(cbind(tau, output.ci))
   colnames(output.ci) = c("tau","lower","upper")
   return(output.ci)
 }
@@ -279,14 +280,15 @@ ci.QF <- function(object, probability=FALSE, alpha=0.05, alternative=c("two.side
 summary.QF <- function(object, ...){
   est.plugin = object$est.plugin
   est.debias = object$est.debias
-  se.vec     = object$se.vec
-  tau.vec    = object$tau.vec
-  n.tau = length(tau.vec)
+  se = object$se
+  tau = object$tau
+
+  n.tau = length(tau)
   output.est = data.frame(matrix(NA, nrow=n.tau, ncol=7))
   colnames(output.est) = c("tau","est.plugin","est.debias","Std. Error","z value","Pr(>|z|)", "")
-  output.est[,1] = tau.vec
-  output.est[,c(2,3,4)] = cbind(rep(est.plugin, n.tau), rep(est.debias, n.tau), se.vec)
-  output.est[,5] = rep(est.debias, n.tau) / se.vec
+  output.est[,1] = tau
+  output.est[,c(2,3,4)] = cbind(rep(est.plugin, n.tau), rep(est.debias, n.tau), se)
+  output.est[,5] = rep(est.debias, n.tau) / se
   output.est[,6] = apply(cbind(pnorm(output.est[,5]), 1-pnorm(output.est[,5])), MARGIN = 1, FUN=min)*2
   output.est[,7] = stars.pval(output.est[,6])
 
