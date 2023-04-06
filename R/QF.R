@@ -27,7 +27,7 @@
 #'   finite sample bias. (default = 1.1)
 #' @param tau The enlargement factor for asymptotic variance of the
 #'   bias-corrected estimator to handle super-efficiency. It allows for a scalar
-#'   or vector. (default = \code{c(0.25,0.5)})
+#'   or vector. (default = \code{c(0.25,0.5,1)})
 #' @param alpha Level of significance to construct two-sided confidence interval
 #'   (default = 0.05)
 #' @param verbose Should intermediate message(s) be printed, the projection
@@ -61,7 +61,7 @@
 #' summary(Est)
 QF <- function(X, y, G, A=NULL, model=c("linear","logistic","logistic_alter"),
                intercept=TRUE, beta.init=NULL, split=TRUE, lambda=NULL, mu=NULL,
-               prob.filter=0.05, rescale=1.1, tau=c(0.25, 0.5), alpha=0.05, verbose=FALSE){
+               prob.filter=0.05, rescale=1.1, tau=c(0.25, 0.5, 1), alpha=0.05, verbose=FALSE){
   model = match.arg(model)
   X = as.matrix(X)
   y = as.vector(y)
@@ -89,8 +89,8 @@ QF <- function(X, y, G, A=NULL, model=c("linear","logistic","logistic_alter"),
     if(split){
       idx1 = sample(1:nrow(X),size=round(nrow(X)/2), replace = F)
       idx2 = setdiff(1:nrow(X), idx1)
-      X1 = X[idx1,]; y1 = y[idx1]
-      X = X[idx2,]; y = y[idx2]
+      X1 = X[idx1,,drop=F]; y1 = y[idx1]
+      X = X[idx2,,drop=F]; y = y[idx2]
     }else{
       X1 = X; y1 = y
     }
@@ -116,7 +116,7 @@ QF <- function(X, y, G, A=NULL, model=c("linear","logistic","logistic_alter"),
   }else{
     idx = rep(TRUE, n)
   }
-  X.filter = X[idx,]
+  X.filter = X[idx,,drop=F]
   y.filter = y[idx]
   weight.filter = weight[idx]
   deriv.filter = deriv[idx]
@@ -157,7 +157,7 @@ QF <- function(X, y, G, A=NULL, model=c("linear","logistic","logistic_alter"),
                 step.vec = incr.vec = rep(NA, 3)
                 for(t in 1:3){
                   index.sel = sample(1:n, size=round(0.9*p), replace=FALSE)
-                  Direction.Est.temp = Direction_searchtuning(X[index.sel,], loading, weight=weight[index.sel], deriv= deriv[index.sel])
+                  Direction.Est.temp = Direction_searchtuning(X[index.sel,,drop=F], loading, weight=weight[index.sel], deriv= deriv[index.sel])
                   step.vec[t] = Direction.Est.temp$step
                   incr.vec[t] = Direction.Est.temp$incr
                 }
@@ -213,21 +213,27 @@ QF <- function(X, y, G, A=NULL, model=c("linear","logistic","logistic_alter"),
   est.debias = max(as.numeric(est.plugin + correction * loading.norm), 0)
 
   ############## Compute SE and Construct CI ###############
-  V.base = 4 * sum(((sqrt(weight^2 * cond_var) * X) %*% direction)^2)/n * loading.norm^2
+  V.base = 4 * sum(((sqrt(weight^2 * cond_var) * X) %*% direction)^2)/n^2 * loading.norm^2
   if((n>0.9*p)&(model=='linear')) V.base = V.base else V.base = rescale^2 * V.base
   if(nullA){
     V.A = sum((as.vector((X[,G,drop=F]%*%beta.init[G])^2) -
-                 as.numeric(t(beta.init[G]) %*% A %*% beta.init[G]))^2) / n
+                 as.numeric(t(beta.init[G]) %*% A %*% beta.init[G]))^2) / n^2
   }else{
     V.A = 0
   }
-  V = (V.base + V.A)
   if(model=='linear'){
-    se.add = tau*(1/sqrt(n))
+    V.add = tau/n
   }else{
-    se.add = tau*max(1/sqrt(n), sparsity*log(p)/n)
+    V.add = tau*max(1/n, (sparsity*log(p)/n)^2)
   }
-  se = sqrt(V/n) + se.add
+  V = (V.base + V.A + V.add)
+  se = sqrt(V)
+  # if(model=='linear'){
+  #   se.add = tau*(1/sqrt(n))
+  # }else{
+  #   se.add = tau*max(1/sqrt(n), sparsity*log(p)/n)
+  # }
+  # se = sqrt(V/n) + se.add
 
   ci.mat = cbind(pmax(est.debias - qnorm(1-alpha/2)*se,0), pmax(est.debias + qnorm(1-alpha/2)*se,0))
   colnames(ci.mat) = c("lower", "upper")

@@ -117,7 +117,9 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol=1.5, maxiter
   ## 1st iteration to decide whether increase mu or decrease mu
   iter = 1
   v = Variable(p+1)
-  obj = 1/4*sum(((X%*%H%*%v)^2)*weight*deriv)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
+  adj.XH = sqrt(weight)*sqrt(deriv)*(X%*%H)
+  obj = 1/4*sum_squares(adj.XH%*%v)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
+  # obj = 1/4*sum(((X%*%H%*%v)^2)*weight*deriv)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
   prob = Problem(Minimize(obj))
   result = solve(prob)
   status = result$status
@@ -132,7 +134,7 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol=1.5, maxiter
   while(iter <= maxiter){
     laststatus = status
     mu = mu*(resol^incr)
-    obj = 1/4*sum(((X%*%H%*%v)^2)*weight*deriv)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
+    obj = 1/4*sum_squares(adj.XH%*%v)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
     prob = Problem(Minimize(obj))
     result = solve(prob)
     status = result$status
@@ -157,6 +159,7 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol=1.5, maxiter
       }
     }
   }
+  if(iter > maxiter) step = maxiter
 
   direction = -(1/2)*(v_opt[-1] + v_opt[1]*loading/loading.norm)
   return(list(proj = direction,
@@ -178,7 +181,8 @@ Direction_fixedtuning <- function(X, loading, weight, deriv, mu=NULL, resol=1.5,
 
   H <- cbind(loading / loading.norm, diag(1, p))
   v <- Variable(p+1)
-  obj <- 1/4*sum(((X%*%H%*%v)^2)*weight*deriv)/n+sum((loading/loading.norm)*(H%*%v))+mu*sum(abs(v))
+  adj.XH = sqrt(weight)*sqrt(deriv)*(X%*%H)
+  obj <- 1/4*sum_squares(adj.XH%*%v)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
   prob <- Problem(Minimize(obj))
   result <- solve(prob)
   opt.sol<-result$getValue(v)
