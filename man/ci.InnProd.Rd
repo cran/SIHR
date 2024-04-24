@@ -15,23 +15,26 @@
 \arguments{
 \item{object}{An object of class `InnProd`, a result of a call to `InnProd`}
 
-\item{alpha}{Level of significance to construct confidence interval (default=0.05)}
+\item{alpha}{Level of significance to construct confidence interval
+(default=0.05)}
 
-\item{alternative}{Indicates the alternative hypothesis to construct confidence interval and must be one of "two.sided" (default), "less", or "greater".}
+\item{alternative}{Indicates the alternative hypothesis to construct
+confidence interval and must be one of "two.sided" (default), "less", or
+"greater".}
 
 \item{...}{arguments to pass down}
 }
 \value{
 A vector giving lower and upper confidence limits for bias-corrected
-estimator
+  estimator
 }
 \description{
 Computes confidence intervals for bias-corrected estimator
 }
 \examples{
 \dontrun{
-##-- Continuing the InnProd(.) example:
-out = ci(Est)
+## -- Continuing the InnProd(.) example:
+out <- ci(Est)
 out
 }
 }

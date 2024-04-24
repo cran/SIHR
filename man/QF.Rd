@@ -19,7 +19,6 @@ QF(
   prob.filter = 0.05,
   rescale = 1.1,
   tau = c(0.25, 0.5, 1),
-  alpha = 0.05,
   verbose = FALSE
 )
 }
@@ -35,8 +34,8 @@ QF(
 \eqn{|G|\times}\eqn{|G|} submatrix of the population covariance matrix
 corresponding to the index set \code{G} (default = \code{NULL})}
 
-\item{model}{The high dimensional regression model, either \code{"linear"}
-or \code{"logistic"} or \code{"logistic_alter"}}
+\item{model}{The high dimensional regression model, either \code{"linear"} or
+\code{"logistic"} or \code{"logistic_alter"}}
 
 \item{intercept}{Should intercept be fitted for the initial estimator
 (default = \code{TRUE})}
@@ -64,10 +63,8 @@ finite sample bias. (default = 1.1)}
 bias-corrected estimator to handle super-efficiency. It allows for a scalar
 or vector. (default = \code{c(0.25,0.5,1)})}
 
-\item{alpha}{Level of significance to construct two-sided confidence interval
-(default = 0.05)}
-
-\item{verbose}{Should intermediate message(s) be printed. (default = \code{FALSE})}
+\item{verbose}{Should intermediate message(s) be printed. (default =
+\code{FALSE})}
 }
 \value{
 \item{est.plugin}{The plugin(biased) estimator for the quadratic form of the
@@ -76,22 +73,19 @@ regression vector restricted to \code{G}}
 regression vector}
 \item{se}{Standard errors of the bias-corrected estimator,
 length of \code{tau}; corrsponding to different values of \code{tau}}
-\item{ci.mat}{The matrix of two.sided confidence interval for the quadratic
-form of the regression vector; row corresponds to different values of
-\code{tau}}
 }
 \description{
 Inference for quadratic forms of the regression vector in high dimensional
 generalized linear regressions
 }
 \examples{
-X = matrix(rnorm(100*5), nrow=100, ncol=5)
-y = X[,1] * 0.5 + X[,2] * 1 + rnorm(100)
-G = c(1,2)
-A = matrix(c(1.5, 0.8, 0.8, 1.5), nrow=2, ncol=2)
-Est = QF(X, y, G, A, model="linear")
+X <- matrix(rnorm(100 * 5), nrow = 100, ncol = 5)
+y <- X[, 1] * 0.5 + X[, 2] * 1 + rnorm(100)
+G <- c(1, 2)
+A <- matrix(c(1.5, 0.8, 0.8, 1.5), nrow = 2, ncol = 2)
+Est <- QF(X, y, G, A, model = "linear")
 ## compute confidence intervals
-ci(Est, alpha=0.05, alternative="two.sided")
+ci(Est, alpha = 0.05, alternative = "two.sided")
 
 ## summary statistics
 summary(Est)
