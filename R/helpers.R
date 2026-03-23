@@ -7,6 +7,38 @@ getmode <- function(v) {
   }
 }
 
+## CVXR 1.8 compatibility: get variable value (works with CVXR 1.0.x and 1.8.x)
+.cvxr_get_value <- function(result, v) {
+  if (exists("value", mode = "function", envir = asNamespace("CVXR"))) {
+    tryCatch(
+      as.vector(CVXR::value(v)),
+      error = function(e) {
+        if (is.function(result$getValue)) result$getValue(v) else stop(e)
+      }
+    )
+  } else if (is.function(result$getValue)) {
+    as.vector(result$getValue(v))
+  } else {
+    stop("Cannot extract variable value from CVXR result")
+  }
+}
+
+## CVXR 1.8 compatibility: get status (works with CVXR 1.0.x and 1.8.x)
+.cvxr_get_status <- function(result, prob) {
+  if (!is.null(result$status)) {
+    result$status
+  } else if (exists("status", mode = "function", envir = asNamespace("CVXR"))) {
+    CVXR::status(prob)
+  } else {
+    stop("Cannot get status from CVXR result")
+  }
+}
+
+## Treat both "optimal" and "optimal_inaccurate" as success (CVXR 1.8)
+.cvxr_is_optimal <- function(status) {
+  status %in% c("optimal", "optimal_inaccurate")
+}
+
 relevant.funs <- function(intercept = TRUE, model = c("linear", "logistic", "logistic_alter")) {
   model <- match.arg(model)
 
@@ -124,10 +156,10 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol = 1.5, maxit
   # obj = 1/4*sum(((X%*%H%*%v)^2)*weight*deriv)/n + sum((loading/loading.norm)*(H%*%v)) + mu*sum(abs(v))
   prob <- Problem(Minimize(obj))
   result <- solve(prob)
-  status <- result$status
-  if (status == "optimal") {
+  status <- .cvxr_get_status(result, prob)
+  if (.cvxr_is_optimal(status)) {
     incr <- -1
-    v_opt <- result$getValue(v)
+    v_opt <- .cvxr_get_value(result, v)
   } else {
     incr <- 1
   }
@@ -139,10 +171,10 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol = 1.5, maxit
     obj <- 1 / 4 * sum_squares(adj.XH %*% v) / n + sum((loading / loading.norm) * (H %*% v)) + mu * sum(abs(v))
     prob <- Problem(Minimize(obj))
     result <- solve(prob)
-    status <- result$status
+    status <- .cvxr_get_status(result, prob)
     if (incr == -1) {
-      if (status == "optimal") {
-        v_opt <- result$getValue(v)
+      if (.cvxr_is_optimal(status)) {
+        v_opt <- .cvxr_get_value(result, v)
         iter <- iter + 1
         next
       } else {
@@ -151,12 +183,12 @@ Direction_searchtuning <- function(X, loading, weight, deriv, resol = 1.5, maxit
       }
     }
     if (incr == 1) {
-      if (status != "optimal") {
+      if (!.cvxr_is_optimal(status)) {
         iter <- iter + 1
         next
       } else {
         step <- iter
-        v_opt <- result$getValue(v)
+        v_opt <- .cvxr_get_value(result, v)
         break
       }
     }
@@ -191,8 +223,8 @@ Direction_fixedtuning <- function(X, loading, weight, deriv, mu = NULL, resol = 
   obj <- 1 / 4 * sum_squares(adj.XH %*% v) / n + sum((loading / loading.norm) * (H %*% v)) + mu * sum(abs(v))
   prob <- Problem(Minimize(obj))
   result <- solve(prob)
-  opt.sol <- result$getValue(v)
-  status <- result$status
+  opt.sol <- .cvxr_get_value(result, v)
+  status <- .cvxr_get_status(result, prob)
   direction <- (-1) / 2 * (opt.sol[-1] + opt.sol[1] * loading / loading.norm)
   return(list(
     proj = direction,
@@ -218,7 +250,7 @@ compute_direction <- function(loading, X, weight, deriv, mu = NULL, verbose = FA
       direction <- solve(Sigma.hat) %*% loading / loading.norm
     } else {
       ## CVXR sometimes break down accidentally, we catch the error and offer an alternative
-      direction_alter <- FALSE
+      direction <- NULL
       tryCatch(
         expr = {
           if (is.null(mu)) {
@@ -234,7 +266,7 @@ compute_direction <- function(loading, X, weight, deriv, mu = NULL, verbose = FA
               step <- getmode(step.vec)
               incr <- getmode(incr.vec)
               Direction.Est <- Direction_fixedtuning(X, loading, weight = weight, deriv = deriv, step = step, incr = incr)
-              while (Direction.Est$status != "optimal") {
+              while (!.cvxr_is_optimal(Direction.Est$status)) {
                 step <- step + incr
                 Direction.Est <- Direction_fixedtuning(X, loading, weight = weight, deriv = deriv, step = step, incr = incr)
               }
@@ -256,7 +288,7 @@ compute_direction <- function(loading, X, weight, deriv, mu = NULL, verbose = FA
           } else {
             ## when mu is specified
             Direction.Est <- Direction_fixedtuning(X, loading, weight = weight, deriv = deriv, mu = mu)
-            while (Direction.Est$status != "optimal") {
+            while (!.cvxr_is_optimal(Direction.Est$status)) {
               mu <- mu * 1.5
               Direction.Est <- Direction_fixedtuning(X, loading, weight = weight, deriv = deriv, mu = mu)
               if (verbose) cat(paste0("The projection direction is identified at mu = ", round(Direction.Est$mu, 6), "\n"))
@@ -265,20 +297,22 @@ compute_direction <- function(loading, X, weight, deriv, mu = NULL, verbose = FA
           direction <- Direction.Est$proj
         },
         warning = function(w) {
-          message("Caught an warning using CVXR!")
+          message("Caught a warning using CVXR!")
           print(w)
         },
         error = function(e) {
           message("Caught an error using CVXR! Alternative method is applied for proj direction.")
           print(e)
-          direction_alter <<- TRUE
         }
       )
-      if (direction_alter) {
+      ## Use diagonal fallback when CVXR fails or direction was not set
+      if (is.null(direction)) {
         temp <- sqrt(weight * deriv) * X
         Sigma.hat <- t(temp) %*% temp / n
-        Sigma.hat.inv <- diag(1 / diag(Sigma.hat))
-        direction <- Sigma.hat.inv %*% loading / loading.norm
+        diag_sigma <- diag(Sigma.hat)
+        diag_sigma[diag_sigma < 1e-10] <- 1e-10
+        Sigma.hat.inv <- diag(1 / diag_sigma)
+        direction <- as.vector(Sigma.hat.inv %*% loading / loading.norm)
       }
     }
   }

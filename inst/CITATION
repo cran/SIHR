@@ -1,10 +1,18 @@
 citHeader("Please cite the following when using the 'SIHR' software package.")
 
-bibentry(bibtype = "Manual",
+bibentry(bibtype = "Article",
          title = "SIHR: Statistical Inference in High-Dimensional Linear and Logistic Regression Models",
          author = c(person("Prabrisha", "Rakshit"),
                     person("Zhenyu", "Wang"),
                     person("Tony", "Cai"),
                     person("Zijian", "Guo")),
-         year = "2021",
-         url = "https://arxiv.org/abs/2109.03365")
+         journal = "The R Journal",
+         year = "2025",
+         volume = "16",
+         number = "3",
+         pages = "27-45",
+         doi = "10.32614/RJ-2024-028",
+         url = "https://journal.r-project.org/articles/RJ-2024-028/",
+         textVersion = paste("Rakshit P, Wang Z, Cai T, Guo Z (2025).",
+                             "SIHR: Statistical Inference in High-Dimensional Linear and Logistic Regression Models.",
+                             "The R Journal, 16(3), 27-45. doi:10.32614/RJ-2024-028"))

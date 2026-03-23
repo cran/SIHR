@@ -1,5 +1,6 @@
-
 # SIHR
+
+[![DOI](https://img.shields.io/badge/DOI-10.32614%2FRJ--2024--028-blue)](https://doi.org/10.32614/RJ-2024-028)
 
 The package **SIHR**(**S**tatistics **I**nference for
 **H**igh-dimensional **R**egression) facilitates statistical inference
@@ -76,3 +77,11 @@ guide for an initial usage of the package.
 consult the [Intro of Usage](https://zywang0701.github.io/SIHR/articles/IntroUsage.pdf).
 * To gain insights into the debiasing methods incorporated within the package, 
 refer to our [Intro of Debiasing Methods](https://zywang0701.github.io/SIHR/articles/IntroMethod.pdf).
+
+## Citation
+
+If you use SIHR in your research, please cite our R Journal article:
+
+> Rakshit P, Wang Z, Cai T, Guo Z (2025). SIHR: Statistical Inference in High-Dimensional Linear and Logistic Regression Models. *The R Journal*, 16(3), 27-45. [doi:10.32614/RJ-2024-028](https://doi.org/10.32614/RJ-2024-028)
+
+In R, run `citation("SIHR")` for the full citation.

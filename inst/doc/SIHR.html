@@ -48,6 +48,7 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -383,10 +384,16 @@ X_i \sim N(\textbf{0}_p, \textbf{I}_p),\; Y_i = \alpha + X_i^\intercal
 <p>Conduct Inference, call <code>LF</code> with
 <code>model=&quot;linear&quot;</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>Est <span class="ot">&lt;-</span> <span class="fu">LF</span>(X, y, loading.mat, <span class="at">model =</span> <span class="st">&quot;linear&quot;</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">intercept.loading =</span> <span class="cn">FALSE</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (1/2)... </span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.044356at step =4</span></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (2/2)... </span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.044356at step =4</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (1/2)...</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">#&gt; ℹ In a future CVXR release, `solve()` will return the optimal value directly</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">#&gt;   (like `psolve()`).</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; ℹ The `$getValue()`/`$getDualValue()` interface will be removed.</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt; ℹ New API: `psolve(prob)`, then `value(x)`, `dual_value(constr)`,</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt;   `status(prob)`.</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="co">#&gt; This message is displayed once per session.</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.044356at step =4</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (2/2)... </span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.044356at step =4</span></span></code></pre></div>
 <p>The parameter <code>intercept</code> indicates whether we fit the
 model with/without intercept term. The parameter
 <code>intercept.loading</code> indicates whether we include intercept
@@ -423,18 +430,18 @@ whether we split samples or not for computing the initial estimator.</p>
 <p><code>ci</code> method for QF</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">ci</span>(Est)</span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;    tau    lower    upper</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; 1 0.25 2.239521 3.890422</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; 2 0.50 2.233725 3.896219</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; 3 1.00 2.222250 3.907693</span></span></code></pre></div>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; 1 0.25 2.394257 3.999535</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; 2 0.50 2.388297 4.005495</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; 3 1.00 2.376506 4.017286</span></span></code></pre></div>
 <p><code>summary</code> method for QF</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">summary</span>(Est)</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; Call: </span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; Inference for Quadratic Functional</span></span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;   tau est.plugin est.debias Std. Error z value  Pr(&gt;|z|)    </span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;  0.25        2.9      3.065     0.4212   7.278 3.400e-13 ***</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;  0.50        2.9      3.065     0.4241   7.227 4.947e-13 ***</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;  1.00        2.9      3.065     0.4300   7.128 1.016e-12 ***</span></span></code></pre></div>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;  0.25      3.037      3.197     0.4095   7.807 5.773e-15 ***</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt;  0.50      3.037      3.197     0.4126   7.749 9.326e-15 ***</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt;  1.00      3.037      3.197     0.4186   7.638 2.220e-14 ***</span></span></code></pre></div>
 <p>In the output results, each row represents the result for different
 values of <span class="math inline">\(\tau\)</span>, the enlargement
 factor for asymptotic variance to handle super-efficiency. Notice that
@@ -487,22 +494,22 @@ X_i^\intercal \beta)}{1+\exp(\alpha + X_i^\intercal \beta)},\; Y_i =
 <code>model=&quot;logistic_alter&quot;</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>Est <span class="ot">&lt;-</span> <span class="fu">LF</span>(X, y, loading.mat, <span class="at">model =</span> <span class="st">&quot;logistic&quot;</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (1/2)... </span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.028911at step =5</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.043366at step =4</span></span>
 <span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt; ---&gt; Computing for loading (2/2)... </span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.028911at step =5</span></span></code></pre></div>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.043366at step =4</span></span></code></pre></div>
 <p>Methods for <code>LF</code></p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">ci</span>(Est)</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt;   loading      lower     upper</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; 1       1  0.6510009  1.866141</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; 2       2 -1.3927844 -0.424308</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt;   loading     lower      upper</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; 1       1  0.511300  1.6193365</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; 2       2 -1.227843 -0.3514535</span></span>
 <span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">summary</span>(Est)</span>
 <span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Call: </span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; Inference for Linear Functional</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; Estimators: </span></span>
 <span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt;  loading est.plugin est.debias Std. Error z value  Pr(&gt;|z|)    </span></span>
-<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;        1     0.3745     1.2586     0.3100   4.060 4.907e-05 ***</span></span>
-<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;        2    -0.2762    -0.9085     0.2471  -3.677 2.357e-04 ***</span></span></code></pre></div>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;        1     0.3745     1.0653     0.2827   3.769 0.0001640 ***</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;        2    -0.2762    -0.7896     0.2236  -3.532 0.0004125 ***</span></span></code></pre></div>
 <p>Notice that the true values are <span class="math inline">\(1.5\)</span> and <span class="math inline">\(-1.25\)</span> for 1st and 2nd objective
 respectively, both are included in their corresponding confidence
 interval. Also it is evident that our bias-corrected estimators is much
@@ -525,22 +532,22 @@ with larger sample size <span class="math inline">\(n=400\)</span>.</p>
 <p>Conduct Inference, call <code>QF</code> with
 <code>model=&quot;logistic_alter&quot;</code>.</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>Est <span class="ot">&lt;-</span> <span class="fu">QF</span>(X, y, G, <span class="at">A =</span> <span class="cn">NULL</span>, <span class="at">model =</span> <span class="st">&quot;logistic_alter&quot;</span>, <span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.029056at step =5</span></span></code></pre></div>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt; The projection direction is identified at mu = 0.019371at step =6</span></span></code></pre></div>
 <p><code>ci</code> method for QF</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">ci</span>(Est)</span>
 <span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;    tau     lower    upper</span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; 1 0.25 0.2274503 2.048520</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; 2 0.50 0.1339998 2.141970</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; 3 1.00 0.0000000 2.306665</span></span></code></pre></div>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; 1 0.25 0.1587740 2.115805</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; 2 0.50 0.0712663 2.203313</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; 3 1.00 0.0000000 2.359677</span></span></code></pre></div>
 <p><code>summary</code> method for QF</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">summary</span>(Est)</span>
 <span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; Call: </span></span>
 <span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; Inference for Quadratic Functional</span></span>
 <span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; </span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt;   tau est.plugin est.debias Std. Error z value Pr(&gt;|z|)  </span></span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;  0.25     0.6434      1.138     0.4646   2.450  0.01430 *</span></span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;  0.50     0.6434      1.138     0.5122   2.222  0.02631 *</span></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt;  1.00     0.6434      1.138     0.5963   1.908  0.05633 .</span></span></code></pre></div>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;  0.25     0.6434      1.137     0.4993   2.278  0.02273 *</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;  0.50     0.6434      1.137     0.5439   2.091  0.03653 *</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt;  1.00     0.6434      1.137     0.6237   1.824  0.06822 .</span></span></code></pre></div>
 <p>In the output results, each row represents the result for different
 values of <span class="math inline">\(\tau\)</span>, the enlargement
 factor for asymptotic variance to handle super-efficiency. Notice that
